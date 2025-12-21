@@ -255,7 +255,7 @@
   <!-- ===== Password 1 ===== -->
   <section id="pw1" class="section active">
     <h1>enter password</h1>
-    <div class="helper">Type <b>haha</b> (lowercase). If correct, a sound will play.</div>
+    <div class="helper">Type <b>haha</b> (lowercase). When correct, it will lock and play the full sound.</div>
     <div class="code-row" aria-label="Password entry">
       <input class="code-input" maxlength="1" id="pw1_1" autocomplete="off" />
       <input class="code-input" maxlength="1" id="pw1_2" autocomplete="off" />
@@ -271,7 +271,7 @@
       <h1>Puzzle 1</h1>
       <div class="helper">
         Keep your mouse moving to keep the music playing. If you stop, the track resets to the start and the green will drain back.
-        The puzzle is only complete when the track finishes.
+        The puzzle is complete once you reach <b>10 seconds</b> of playback.
       </div>
 
       <div class="meter" aria-label="Progress meter"><div id="p1MeterBar"></div></div>
@@ -401,39 +401,64 @@
     if (id === 'p5') initPrimeFibTime();
   }
 
-  /* ========= Password 1: "haha" lowercase red + sound ========= */
+  /* ========= Password 1: "haha" lowercase red + LOCK + play full sound, then advance on ended ========= */
   (function initPw1(){
     const inputs = [pw1_1, pw1_2, pw1_3, pw1_4];
+    let pw1Done = false;
+
     inputs.forEach((inp, i) => {
       inp.addEventListener('input', () => {
-        // keep lowercase (do not force uppercase)
+        if (pw1Done) { inp.value = (inp.value || '').slice(0,1).toLowerCase(); return; }
         inp.value = (inp.value || '').slice(0,1).toLowerCase();
         if (inp.value && i < inputs.length - 1) inputs[i+1].focus();
         check();
       });
       inp.addEventListener('keydown', (e) => {
+        if (pw1Done) { e.preventDefault(); return; }
         if (e.key === 'Backspace' && !inp.value && i > 0) inputs[i-1].focus();
       });
     });
 
+    function lockInputs(){
+      inputs.forEach(inp => {
+        inp.readOnly = true;   // freeze: cannot change text
+        inp.blur();
+      });
+    }
+
     function check(){
       const code = inputs.map(x => (x.value || '')).join('');
-      if (code === 'haha'){
-        // play local sound effect
+      if (code === 'haha' && !pw1Done){
+        pw1Done = true;
+        lockInputs();
+
         const s = document.getElementById('hahaSound');
-        try { s.currentTime = 0; s.play(); } catch(e) {}
-        show('p1');
+        // advance ONLY when sound ends
+        s.onended = () => {
+          s.onended = null;
+          show('p1');
+        };
+
+        try {
+          s.currentTime = 0;
+          s.play();
+        } catch(e) {
+          // If autoplay is blocked, still proceed when it "ends" isn't possible;
+          // but in normal use a typed input counts as a gesture, so play should work.
+        }
       }
     }
   })();
 
-  /* ========= Puzzle 1: jinglebells only while mouse moves ========= */
+  /* ========= Puzzle 1: jinglebells only while mouse moves; complete at 10s ========= */
   let p1Inited = false;
   let p1RAF = null;
   let lastMouseMove = 0;
   let startedOnce = false;
   let displayProgress = 0; // 0..1 smoothed
   let p1Done = false;
+
+  const P1_TARGET_SECONDS = 10; // temporary: only need first 10 seconds
 
   function initPuzzle1(){
     const audio = document.getElementById('jingle');
@@ -451,11 +476,7 @@
 
     // Always reset track on entry
     try { audio.pause(); audio.currentTime = 0; } catch(e) {}
-    audio.onended = () => {
-      p1Done = true;
-      status.textContent = 'Track finished. Puzzle complete.';
-      nextBtn.disabled = false;
-    };
+    audio.onended = null; // no longer used for completion
 
     if (!p1Inited){
       p1Inited = true;
@@ -482,34 +503,36 @@
 
       if (!p1Done){
         if (moving){
-          // play (may require gesture; mousemove usually counts)
           try {
             if (audio.paused) audio.play();
           } catch(e) {}
         } else {
-          // stop and reset to start
           if (!audio.paused || audio.currentTime !== 0){
             try { audio.pause(); audio.currentTime = 0; } catch(e) {}
           }
         }
       }
 
-      // progress target (only meaningful if duration known)
-      let target = 0;
-      if (audio.duration && isFinite(audio.duration) && audio.duration > 0){
-        target = Math.max(0, Math.min(1, audio.currentTime / audio.duration));
+      // Completion check: reach 10 seconds of playback
+      if (!p1Done && audio.currentTime >= P1_TARGET_SECONDS){
+        p1Done = true;
+        try { audio.pause(); } catch(e) {}
+        status.textContent = '10 seconds reached. Puzzle complete.';
+        nextBtn.disabled = false;
       }
+
+      // progress target: scaled to 10 seconds (not full track)
+      let target = 0;
+      target = Math.max(0, Math.min(1, audio.currentTime / P1_TARGET_SECONDS));
 
       // If not moving and we reset, make it "drop back" smoothly.
       if (!moving && !p1Done){
         displayProgress = Math.max(0, displayProgress - 0.012);
         if (startedOnce) status.textContent = 'Stopped — reset to start. Move again…';
       } else {
-        // ease toward current playback progress
         displayProgress = displayProgress + (target - displayProgress) * 0.25;
       }
 
-      // update visuals: full-screen fill + meter
       fill.style.transform = `scaleX(${displayProgress})`;
       meterBar.style.width = `${Math.round(displayProgress * 100)}%`;
 
@@ -580,7 +603,6 @@
       finished: false
     };
 
-    // build doors
     for (let i=0;i<3;i++){
       const d = document.createElement('div');
       d.className = 'door';
@@ -602,16 +624,13 @@
       if (montyState.picked !== null) return;
 
       montyState.picked = i;
-      montyState.carDoor = i; // RIGGED: car is always behind first pick
+      montyState.carDoor = i; // rigged
 
-      // highlight picked
       for (let k=0;k<3;k++){
         setDoorVisual(k, { selected: k===i, revealed:false, text:'?' });
       }
 
-      // Monty reveals a goat door (must not be picked and must not be car door)
       const candidates = [0,1,2].filter(x => x !== montyState.picked && x !== montyState.carDoor);
-      // with rigging, candidates is always the single remaining goat door
       const reveal = candidates[Math.floor(Math.random()*candidates.length)];
       montyState.revealed = reveal;
 
@@ -629,26 +648,18 @@
       if (montyState.finished) return;
       montyState.finished = true;
 
-      // determine final choice
       let finalPick = montyState.picked;
       if (switched){
-        // switch to the only unrevealed door that isn't picked
         finalPick = [0,1,2].find(x => x !== montyState.picked && x !== montyState.revealed);
       }
 
-      // reveal all
       for (let k=0;k<3;k++){
         if (k === montyState.revealed) continue;
         const isCar = (k === montyState.carDoor);
         setDoorVisual(k, { selected: k===finalPick, revealed:true, text: isCar ? 'Car' : 'Goat' });
       }
 
-      // rig ensures: if you switch, you lose
-      if (switched){
-        msgEl.textContent = 'You switched… and lost.';
-      } else {
-        msgEl.textContent = 'You stayed… and won.';
-      }
+      msgEl.textContent = switched ? 'You switched… and lost.' : 'You stayed… and won.';
 
       stayBtn.style.display = 'none';
       switchBtn.style.display = 'none';
@@ -676,14 +687,12 @@
     '3,0': 8,
     '4,0': 9
   };
-  let cwInited = false;
 
   function initCrossword(){
     const table = document.getElementById('cwTable');
     const nextBtn = document.getElementById('p4Next');
     nextBtn.style.display = 'none';
 
-    // build grid fresh each time
     table.innerHTML = '';
     for (let r=0;r<5;r++){
       const tr = document.createElement('tr');
@@ -708,7 +717,6 @@
           check();
         });
         inp.addEventListener('keydown', (e) => {
-          // simple arrow navigation
           const rr = parseInt(inp.dataset.r,10);
           const cc = parseInt(inp.dataset.c,10);
           const go = (nr,nc) => {
@@ -741,9 +749,9 @@
     nextBtn.onclick = () => show('p5');
   }
 
-  /* ========= Puzzle 5: Prime Fibonacci Time (must be both; fixed list) ========= */
+  /* ========= Puzzle 5: Prime Fibonacci Time (fixed list) ========= */
   let p5Timer = null;
-  const primeFibUnder60 = new Set([2,3,5,13]); // fixed list under 60
+  const primeFibUnder60 = new Set([2,3,5,13]);
 
   function initPrimeFibTime(){
     const clock = document.getElementById('p5Clock');
@@ -779,7 +787,7 @@
     nextBtn.onclick = () => show('pw2');
   }
 
-  /* ========= Password 2: FUECOCO (normal styling) ========= */
+  /* ========= Password 2: FUECOCO ========= */
   (function initPw2(){
     const ids = ['pw2_1','pw2_2','pw2_3','pw2_4','pw2_5','pw2_6','pw2_7'];
     const inputs = ids.map(id => document.getElementById(id));
