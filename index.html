@@ -316,7 +316,7 @@
     <div class="goat-wrap">
       <div class="goat-pill">
         <span class="goat-dot" id="goatDot"></span>
-        Goats: <span id="goatCount">0</span>/2
+        Goats: <span id="goatCount">0</span>/3
       </div>
     </div>
 
@@ -374,7 +374,7 @@
 
   <!-- ===== Password 2 ===== -->
   <section id="pw2" class="section">
-    <h1>Final password</h1>
+    <h1>Luke has the final password, you should tell him how much fun you've had with the puzzle and he might give it to you!</h1>
     <div class="code-row" aria-label="Final password entry">
       <input class="code-input" maxlength="1" id="pw2_1" autocomplete="off" />
       <input class="code-input" maxlength="1" id="pw2_2" autocomplete="off" />
@@ -446,7 +446,6 @@
   let p1Inited = false;
   let p1RAF = null;
   let lastMouseMove = 0;
-  let startedOnce = false;
   let displayProgress = 0;
   let p1Done = false;
 
@@ -472,7 +471,6 @@
       p1Inited = true;
       document.addEventListener('mousemove', () => {
         lastMouseMove = performance.now();
-        startedOnce = true;
       }, { passive: true });
 
       nextBtn.addEventListener('click', () => show('p2'));
@@ -544,7 +542,7 @@
     nextBtn.onclick = () => show('p3');
   }
 
-  /* ===== Puzzle 3: Monty Hall (rigged) + goat counter (0 green, 1 orange, 2 red, then refresh) ===== */
+  /* ===== Puzzle 3: Monty Hall (rigged) + goat counter ===== */
   let goatLosses = 0;
 
   function updateGoatUI(){
@@ -648,7 +646,7 @@
     }
   }
 
-  /* ===== Puzzle 4: Crossword ===== */
+  /* ===== Puzzle 4: Crossword (auto-advance on correct) ===== */
   const cwGrid = [
     ['R','X','J','X','I'],
     ['E','J','E','C','T'],
@@ -713,16 +711,21 @@
         const v = (inp.value || '').toUpperCase();
         if (v !== expected) ok = false;
       });
-      nextBtn.style.display = ok ? 'inline-block' : 'none';
+
+      if (ok){
+        nextBtn.style.display = 'inline-block';
+        // auto-advance immediately once correct
+        show('p5');
+      } else {
+        nextBtn.style.display = 'none';
+      }
     }
 
     nextBtn.onclick = () => show('p5');
   }
 
-  /* ===== Puzzle 5: Prime Fibonacci Time (fixed list) ===== */
+  /* ===== Puzzle 5: TEST MODE — always succeeds ===== */
   let p5Timer = null;
-  const primeFibUnder60 = new Set([2,3,5,13]);
-
   function initPrimeFibTime(){
     const clock = document.getElementById('p5Clock');
     const checkBtn = document.getElementById('p5Check');
@@ -740,18 +743,7 @@
     p5Timer = setInterval(update, 1000);
 
     checkBtn.onclick = () => {
-      const [hhS, mmS] = clock.textContent.split(':');
-      const hh = parseInt(hhS, 10);
-      const mm = parseInt(mmS, 10);
-      const msgs = [];
-      if (!primeFibUnder60.has(hh)) msgs.push(`${hhS} isn't prime fibonacci`);
-      if (!primeFibUnder60.has(mm)) msgs.push(`${mmS} isn't prime fibonacci`);
-      if (msgs.length) {
-        alert(msgs.join('\n'));
-        nextBtn.style.display = 'none';
-      } else {
-        nextBtn.style.display = 'inline-block';
-      }
+      nextBtn.style.display = 'inline-block';
     };
 
     nextBtn.onclick = () => show('pw2');
