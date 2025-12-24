@@ -378,7 +378,7 @@
       <p><b>4.</b> ⏏</p>
       <p><b>7.</b> 0, 1, 3, 6, 2, 7, 13, 20, 12, 21, 11, 22, 10, 23, 9, 24... Re_____'s</p>
       <p><b>8.</b> Almost done with the puzzle?</p>
-      <p><b>9.</b> What happens if your mouse stops moving?</p>
+      <p><b>9.</b> What happens if your mouse stops moving during jingle bells?</p>
 
       <h3>Down</h3>
       <p><b>1.</b> What 6 does when 2 is over 3</p>
@@ -478,14 +478,13 @@
     }
   })();
 
-  /* ===== Puzzle 1: mouse-move audio, complete at 10 seconds ===== */
+  /* ===== Puzzle 1: mouse-move audio, complete only when FULL TRACK finishes ===== */
   let p1Inited = false;
   let p1RAF = null;
   let lastMouseMove = 0;
   let displayProgress = 0;
   let p1Done = false;
-
-  const P1_TARGET_SECONDS = 10;
+  let p1EndedBound = false;
 
   function initPuzzle1(){
     const audio = document.getElementById('jingle');
@@ -512,6 +511,16 @@
       nextBtn.addEventListener('click', () => show('p2'));
     }
 
+    if (!p1EndedBound){
+      p1EndedBound = true;
+      audio.addEventListener('ended', () => {
+        if (document.getElementById('p1').classList.contains('active')) {
+          p1Done = true;
+          nextBtn.disabled = false;
+        }
+      });
+    }
+
     if (p1RAF) cancelAnimationFrame(p1RAF);
 
     const MOVE_WINDOW_MS = 220;
@@ -530,13 +539,8 @@
         }
       }
 
-      if (!p1Done && audio.currentTime >= P1_TARGET_SECONDS){
-        p1Done = true;
-        try { audio.pause(); } catch(e) {}
-        nextBtn.disabled = false;
-      }
-
-      const target = Math.max(0, Math.min(1, audio.currentTime / P1_TARGET_SECONDS));
+      const dur = (audio && isFinite(audio.duration) && audio.duration > 0) ? audio.duration : 0;
+      const target = dur > 0 ? Math.max(0, Math.min(1, audio.currentTime / dur)) : 0;
 
       if (!moving && !p1Done){
         displayProgress = Math.max(0, displayProgress - 0.012);
@@ -553,8 +557,10 @@
     p1RAF = requestAnimationFrame(tick);
   }
 
-  /* ===== Puzzle 2: TEST MODE — always succeeds ===== */
+  /* ===== Puzzle 2: Fibonacci Time (real check) ===== */
   let p2Timer = null;
+  const fibUnder60 = new Set([0,1,2,3,5,8,13,21,34,55]);
+
   function initFibTime(){
     const clock = document.getElementById('p2Clock');
     const checkBtn = document.getElementById('p2Check');
@@ -573,8 +579,19 @@
     p2Timer = setInterval(update, 1000);
 
     checkBtn.onclick = () => {
+      const [hhS, mmS] = clock.textContent.split(':');
+      const hh = parseInt(hhS, 10);
+      const mm = parseInt(mmS, 10);
+      const msgs = [];
+      if (!fibUnder60.has(hh)) msgs.push(`${hhS} isn't fibonacci`);
+      if (!fibUnder60.has(mm)) msgs.push(`${mmS} isn't fibonacci`);
+      if (msgs.length) {
+        alert(msgs.join('\n'));
+        return;
+      }
       nextBtn.style.display = 'inline-block';
     };
+
     nextBtn.onclick = () => show('p3');
   }
 
@@ -792,7 +809,7 @@
       const ok = isCorrect();
 
       if (ok){
-        show('p5');              // advance straight away when correct
+        show('p5');
         return;
       }
 
@@ -804,8 +821,10 @@
     };
   }
 
-  /* ===== Puzzle 5: TEST MODE — always succeeds ===== */
+  /* ===== Puzzle 5: Prime Fibonacci Time (real check using fixed list 0-60) ===== */
   let p5Timer = null;
+  const primeFibUnder60 = new Set([2,3,5,13]);
+
   function initPrimeFibTime(){
     const clock = document.getElementById('p5Clock');
     const checkBtn = document.getElementById('p5Check');
@@ -823,6 +842,16 @@
     p5Timer = setInterval(update, 1000);
 
     checkBtn.onclick = () => {
+      const [hhS, mmS] = clock.textContent.split(':');
+      const hh = parseInt(hhS, 10);
+      const mm = parseInt(mmS, 10);
+      const msgs = [];
+      if (!primeFibUnder60.has(hh)) msgs.push(`${hhS} isn't prime fibonacci`);
+      if (!primeFibUnder60.has(mm)) msgs.push(`${mmS} isn't prime fibonacci`);
+      if (msgs.length) {
+        alert(msgs.join('\n'));
+        return;
+      }
       nextBtn.style.display = 'inline-block';
     };
 
