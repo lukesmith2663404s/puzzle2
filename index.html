@@ -268,12 +268,6 @@
     }
     #cwHaha.show{ opacity: 1; }
 
-    /* Optional quick visual feedback on wrong */
-    .cw-wrong{
-      outline: 3px solid #ff2d2d;
-      outline-offset: -3px;
-    }
-
     /* Final */
     #final img{
       width: min(360px, 70vw);
@@ -667,9 +661,9 @@
     }
   }
 
-  /* ===== Puzzle 4: Crossword (CHECK BUTTON FIXED) ===== */
+  /* ===== Puzzle 4: Crossword ===== */
   const cwGrid = [
-    ['R','X','J','X','I'],
+    ['R','X','A','X','I'],  // <-- FIXED: top row middle is A
     ['E','J','E','C','T'],
     ['C','A','M','A','N'],
     ['U','M','M','N','O'],
@@ -719,7 +713,6 @@
 
           inp.addEventListener('input', () => {
             inp.value = (inp.value || '').slice(0,1).toUpperCase();
-            inp.classList.remove('cw-wrong');
           });
 
           td.appendChild(inp);
@@ -737,10 +730,7 @@
         const c = parseInt(inp.dataset.c,10);
         const expected = cwGrid[r][c];
         const v = (inp.value || '').toUpperCase();
-        if (v !== expected){
-          ok = false;
-          inp.classList.add('cw-wrong');
-        }
+        if (v !== expected) ok = false;
       });
       return ok;
     }
@@ -782,14 +772,12 @@
       checkBtn.disabled = true;
       const ok = isCorrect();
 
-      // Per your latest request: button disappears + haha + sound ALWAYS
       playHahaThen(() => {
         hahaText.classList.remove('show');
 
         if (ok){
           show('p5');
         } else {
-          // wrong: bring button back so they can try again
           checkBtn.style.display = 'inline-block';
           checkBtn.disabled = false;
         }
