@@ -55,22 +55,15 @@
     /* First password: lowercase, red */
     #pw1 .code-input{
       color:#ff2d2d;
-      text-transform: none;   /* keep lowercase */
+      text-transform: none;
       border-color:#550000;
     }
 
-    /* Second password: normal styling (not red, not forced lowercase) */
+    /* Second password: normal styling */
     #pw2 .code-input{
       color:#fff;
       text-transform: uppercase;
       border-color:#333;
-    }
-
-    .helper{
-      opacity:.8;
-      max-width: 700px;
-      margin: 0 auto;
-      line-height: 1.4;
     }
 
     /* ===== Puzzle 1 (mouse-move music) ===== */
@@ -198,7 +191,7 @@
       height: 12px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,.25);
-      background: #22c55e; /* green default */
+      background: #22c55e;
       display:inline-block;
       vertical-align: middle;
       margin-right: 6px;
@@ -285,7 +278,6 @@
   <!-- ===== Password 1 ===== -->
   <section id="pw1" class="section active">
     <h1>enter password</h1>
-    <div class="helper">Type <b>haha</b> (lowercase). When correct, it will lock and play the full sound.</div>
     <div class="code-row" aria-label="Password entry">
       <input class="code-input" maxlength="1" id="pw1_1" autocomplete="off" />
       <input class="code-input" maxlength="1" id="pw1_2" autocomplete="off" />
@@ -294,49 +286,34 @@
     </div>
   </section>
 
-  <!-- ===== Puzzle 1: mouse-move jingle bells ===== -->
+  <!-- ===== Puzzle 1 ===== -->
   <section id="p1" class="section">
     <div class="fill" id="p1Fill"></div>
     <div class="content">
       <h1>Puzzle 1</h1>
-      <div class="helper">
-        Keep your mouse moving to keep the music playing. If you stop, the track resets to the start and the green will drain back.
-        The puzzle is complete once you reach <b>10 seconds</b> of playback.
-      </div>
-
-      <div class="meter" aria-label="Progress meter"><div id="p1MeterBar"></div></div>
-      <div class="status" id="p1Status">Move your mouse to begin…</div>
-
+      <div class="meter"><div id="p1MeterBar"></div></div>
+      <div class="status" id="p1Status"></div>
       <button id="p1Next" disabled>Next</button>
     </div>
-
-    <!-- hidden audio (local file) -->
     <audio id="jingle" preload="auto" src="jinglebells.mp3"></audio>
   </section>
 
-  <!-- ===== Puzzle 2: Fibonacci [Prime struck] Time ===== -->
+  <!-- ===== Puzzle 2 ===== -->
   <section id="p2" class="section">
     <h1>Puzzle 2</h1>
     <div class="rule-title">
       <span class="fib">Fibonacci</span><span class="strike">Prime</span>Time
     </div>
     <div class="clock" id="p2Clock">00:00</div>
-    <div class="helper">
-      Press the button. If <b>HH</b> and/or <b>MM</b> aren’t Fibonacci numbers (under 60), you’ll be told.
-    </div>
     <button id="p2Check">Fibonacci Time?</button>
     <button id="p2Next" style="display:none;">Next</button>
   </section>
 
-  <!-- ===== Puzzle 3: Monty Hall (rigged) ===== -->
+  <!-- ===== Puzzle 3 ===== -->
   <section id="p3" class="section">
     <h1>Puzzle 3</h1>
-    <div class="helper">
-      Pick a door. One door has the car. Monty will reveal a goat and offer you a switch.
-      (This version is… unhelpful.)
-    </div>
 
-    <div class="goat-wrap" aria-label="Goat counter">
+    <div class="goat-wrap">
       <div class="goat-pill">
         <span class="goat-dot" id="goatDot"></span>
         Goats: <span id="goatCount">0</span>/2
@@ -356,16 +333,16 @@
     <button id="p3Next" style="display:none;">Next</button>
   </section>
 
-  <!-- ===== Puzzle 4: Crossword ===== -->
+  <!-- ===== Puzzle 4 ===== -->
   <section id="p4" class="section">
     <h1>Puzzle 4</h1>
 
     <div class="cw-wrap">
-      <table class="cw-grid" id="cwTable" aria-label="Crossword grid"></table>
+      <table class="cw-grid" id="cwTable"></table>
       <button id="p4Next" style="display:none;">Next</button>
     </div>
 
-    <div class="clues" aria-label="Crossword clues">
+    <div class="clues">
       <h3>Across</h3>
       <p><b>1.</b> With 2 and 3, HEART EFIR RWATE</p>
       <p><b>2.</b> See 1</p>
@@ -375,7 +352,7 @@
       <p><b>8.</b> Almost done with the puzzle?</p>
       <p><b>9.</b> What happens if your mouse stops moving?</p>
 
-      <h3>DOWN</h3>
+      <h3>Down</h3>
       <p><b>1.</b> What 6 does when 2 is over 3</p>
       <p><b>2.</b> S13 JA425</p>
       <p><b>3.</b> Puzzle... it fair?</p>
@@ -384,26 +361,20 @@
     </div>
   </section>
 
-  <!-- ===== Puzzle 5: Prime Fibonacci Time ===== -->
+  <!-- ===== Puzzle 5 ===== -->
   <section id="p5" class="section">
     <h1>Puzzle 5</h1>
     <div class="rule-title">
       <span class="strike">Prime</span><span class="fib">Fibonacci</span>Time
     </div>
     <div class="clock" id="p5Clock">00:00</div>
-    <div class="helper">
-      Now both numbers must be <b>prime</b> and <b>Fibonacci</b> (under 60). This uses a fixed list.
-    </div>
     <button id="p5Check">Prime Fibonacci Time?</button>
     <button id="p5Next" style="display:none;">Next</button>
   </section>
 
-  <!-- ===== Password 2 (Luke) ===== -->
+  <!-- ===== Password 2 ===== -->
   <section id="pw2" class="section">
     <h1>Final password</h1>
-    <div class="helper">
-      Luke has the final password, you should tell him how much fun you've had with the puzzle and he might give it to you!
-    </div>
     <div class="code-row" aria-label="Final password entry">
       <input class="code-input" maxlength="1" id="pw2_1" autocomplete="off" />
       <input class="code-input" maxlength="1" id="pw2_2" autocomplete="off" />
@@ -422,11 +393,9 @@
     <div class="mc">Merry Christmas</div>
   </section>
 
-  <!-- Local sound for correct initial password -->
   <audio id="hahaSound" preload="auto" src="haha.mp3"></audio>
 
 <script>
-  /* ========= navigation ========= */
   function show(id){
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -438,7 +407,7 @@
     if (id === 'p5') initPrimeFibTime();
   }
 
-  /* ========= Password 1: "haha" lowercase red + LOCK + play full sound, then advance on ended ========= */
+  /* ===== Password 1: haha (lowercase), lock inputs, play full sound, then advance ===== */
   (function initPw1(){
     const inputs = [pw1_1, pw1_2, pw1_3, pw1_4];
     let pw1Done = false;
@@ -468,13 +437,12 @@
 
         const s = document.getElementById('hahaSound');
         s.onended = () => { s.onended = null; show('p1'); };
-
         try { s.currentTime = 0; s.play(); } catch(e) {}
       }
     }
   })();
 
-  /* ========= Puzzle 1: jinglebells only while mouse moves; complete at 10s ========= */
+  /* ===== Puzzle 1: mouse-move audio, complete at 10 seconds ===== */
   let p1Inited = false;
   let p1RAF = null;
   let lastMouseMove = 0;
@@ -493,7 +461,7 @@
 
     p1Done = false;
     nextBtn.disabled = true;
-    status.textContent = 'Move your mouse to begin…';
+    status.textContent = '';
     displayProgress = 0;
     fill.style.transform = 'scaleX(0)';
     meterBar.style.width = '0%';
@@ -504,10 +472,7 @@
       p1Inited = true;
       document.addEventListener('mousemove', () => {
         lastMouseMove = performance.now();
-        if (!startedOnce){
-          startedOnce = true;
-          status.textContent = 'Keep moving…';
-        }
+        startedOnce = true;
       }, { passive: true });
 
       nextBtn.addEventListener('click', () => show('p2'));
@@ -534,7 +499,6 @@
       if (!p1Done && audio.currentTime >= P1_TARGET_SECONDS){
         p1Done = true;
         try { audio.pause(); } catch(e) {}
-        status.textContent = '10 seconds reached. Puzzle complete.';
         nextBtn.disabled = false;
       }
 
@@ -542,7 +506,6 @@
 
       if (!moving && !p1Done){
         displayProgress = Math.max(0, displayProgress - 0.012);
-        if (startedOnce) status.textContent = 'Stopped — reset to start. Move again…';
       } else {
         displayProgress = displayProgress + (target - displayProgress) * 0.25;
       }
@@ -556,10 +519,8 @@
     p1RAF = requestAnimationFrame(tick);
   }
 
-  /* ========= Puzzle 2: Fibonacci Time (HH & MM must be Fibonacci under 60) ========= */
+  /* ===== Puzzle 2: TEST MODE — always succeeds ===== */
   let p2Timer = null;
-  const fibUnder60 = new Set([0,1,2,3,5,8,13,21,34,55]);
-
   function initFibTime(){
     const clock = document.getElementById('p2Clock');
     const checkBtn = document.getElementById('p2Check');
@@ -578,45 +539,25 @@
     p2Timer = setInterval(update, 1000);
 
     checkBtn.onclick = () => {
-      const [hhS, mmS] = clock.textContent.split(':');
-      const hh = parseInt(hhS, 10);
-      const mm = parseInt(mmS, 10);
-      const msgs = [];
-      if (!fibUnder60.has(hh)) msgs.push(`${hhS} isn't fibonacci`);
-      if (!fibUnder60.has(mm)) msgs.push(`${mmS} isn't fibonacci`);
-      if (msgs.length) {
-        alert(msgs.join('\n'));
-        nextBtn.style.display = 'none';
-      } else {
-        nextBtn.style.display = 'inline-block';
-      }
+      nextBtn.style.display = 'inline-block';
     };
-
     nextBtn.onclick = () => show('p3');
   }
 
-  /* ========= Puzzle 3: Monty Hall (rigged + goat counter / lives) ========= */
-  let montyState = null;
-  let goatLosses = 0; // 0..2; next loss triggers full refresh
+  /* ===== Puzzle 3: Monty Hall (rigged) + goat counter (0 green, 1 orange, 2 red, then refresh) ===== */
+  let goatLosses = 0;
 
   function updateGoatUI(){
     const dot = document.getElementById('goatDot');
     const count = document.getElementById('goatCount');
     count.textContent = String(goatLosses);
-
-    // 0 green, 1 orange, 2 red
     if (goatLosses <= 0) dot.style.background = '#22c55e';
     else if (goatLosses === 1) dot.style.background = '#f59e0b';
     else dot.style.background = '#ef4444';
   }
 
   function hardReset(){
-    // Do an actual refresh if possible; otherwise instruct.
-    try {
-      location.reload();
-    } catch(e) {
-      alert("Complete reset needed. Please refresh the page.");
-    }
+    try { location.reload(); } catch(e) { alert("Complete reset needed. Please refresh the page."); }
   }
 
   function initMonty(){
@@ -630,19 +571,13 @@
     updateGoatUI();
 
     doorsEl.innerHTML = '';
-    msgEl.textContent = 'Choose a door.';
+    msgEl.textContent = '';
     stayBtn.style.display = 'none';
     switchBtn.style.display = 'none';
     retryBtn.style.display = 'none';
     nextBtn.style.display = 'none';
 
-    montyState = {
-      picked: null,
-      carDoor: null,
-      revealed: null,
-      finished: false,
-      won: false
-    };
+    const state = { picked:null, carDoor:null, revealed:null, finished:false };
 
     for (let i=0;i<3;i++){
       const d = document.createElement('div');
@@ -653,85 +588,67 @@
       doorsEl.appendChild(d);
     }
 
-    function setDoorVisual(i, opts){
+    function setDoor(i, {selected=false, revealed=false, text='?'}){
       const el = doorsEl.children[i];
-      el.classList.toggle('selected', !!opts.selected);
-      el.classList.toggle('revealed', !!opts.revealed);
-      if (opts.text !== undefined) el.lastElementChild.textContent = opts.text;
+      el.classList.toggle('selected', selected);
+      el.classList.toggle('revealed', revealed);
+      el.lastElementChild.textContent = text;
     }
 
     function onPick(i){
-      if (montyState.finished) return;
-      if (montyState.picked !== null) return;
+      if (state.finished || state.picked !== null) return;
 
-      montyState.picked = i;
-      montyState.carDoor = i; // rigged: car always behind first pick
+      state.picked = i;
+      state.carDoor = i; // rigged
 
-      for (let k=0;k<3;k++){
-        setDoorVisual(k, { selected: k===i, revealed:false, text:'?' });
-      }
+      for (let k=0;k<3;k++) setDoor(k, { selected:k===i, revealed:false, text:'?' });
 
-      const candidates = [0,1,2].filter(x => x !== montyState.picked && x !== montyState.carDoor);
-      const reveal = candidates[Math.floor(Math.random()*candidates.length)];
-      montyState.revealed = reveal;
-
-      setDoorVisual(reveal, { selected:false, revealed:true, text:'Goat' });
-      msgEl.textContent = 'Monty reveals a goat. Do you want to switch?';
+      const candidates = [0,1,2].filter(x => x !== state.picked && x !== state.carDoor);
+      state.revealed = candidates[Math.floor(Math.random()*candidates.length)];
+      setDoor(state.revealed, { selected:false, revealed:true, text:'Goat' });
 
       stayBtn.style.display = 'inline-block';
       switchBtn.style.display = 'inline-block';
-      retryBtn.style.display = 'none';
 
       stayBtn.onclick = () => finish(false);
       switchBtn.onclick = () => finish(true);
     }
 
     function finish(switched){
-      if (montyState.finished) return;
-      montyState.finished = true;
+      if (state.finished) return;
+      state.finished = true;
 
-      let finalPick = montyState.picked;
+      let finalPick = state.picked;
       if (switched){
-        finalPick = [0,1,2].find(x => x !== montyState.picked && x !== montyState.revealed);
+        finalPick = [0,1,2].find(x => x !== state.picked && x !== state.revealed);
       }
 
-      // reveal remaining doors
       for (let k=0;k<3;k++){
-        if (k === montyState.revealed) continue;
-        const isCar = (k === montyState.carDoor);
-        setDoorVisual(k, { selected: k===finalPick, revealed:true, text: isCar ? 'Car' : 'Goat' });
+        if (k === state.revealed) continue;
+        const isCar = (k === state.carDoor);
+        setDoor(k, { selected:k===finalPick, revealed:true, text: isCar ? 'Car' : 'Goat' });
       }
 
-      const won = (finalPick === montyState.carDoor);
-      montyState.won = won;
-
-      // IMPORTANT: you can only progress if you WIN; otherwise you must retry and lose a life.
-      if (won){
-        msgEl.textContent = 'You stayed… and won.';
-        nextBtn.style.display = 'inline-block';
-        retryBtn.style.display = 'none';
-      } else {
-        msgEl.textContent = 'You switched… and lost.';
-        nextBtn.style.display = 'none';
-        retryBtn.style.display = 'inline-block';
-
-        goatLosses += 1;
-        if (goatLosses >= 3){
-          hardReset();
-          return;
-        }
-        updateGoatUI();
-      }
+      const won = (finalPick === state.carDoor);
 
       stayBtn.style.display = 'none';
       switchBtn.style.display = 'none';
 
-      retryBtn.onclick = () => initMonty();
-      nextBtn.onclick = () => show('p4');
+      if (won){
+        nextBtn.style.display = 'inline-block';
+        nextBtn.onclick = () => show('p4');
+      } else {
+        retryBtn.style.display = 'inline-block';
+        retryBtn.onclick = () => initMonty();
+
+        goatLosses += 1;
+        if (goatLosses >= 3) { hardReset(); return; }
+        updateGoatUI();
+      }
     }
   }
 
-  /* ========= Puzzle 4: Crossword (with black X squares) ========= */
+  /* ===== Puzzle 4: Crossword ===== */
   const cwGrid = [
     ['R','X','J','X','I'],
     ['E','J','E','C','T'],
@@ -739,26 +656,17 @@
     ['U','M','M','N','O'],
     ['R','E','S','E','T'],
   ];
-  // X positions should be black squares (not letters):
   const cwBlacks = new Set(['0,1','0,3']);
-
   const cwNumbers = {
-    '0,0': 1,
-    '0,2': 2,
-    '0,4': 3,
-    '1,0': 4,
-    '1,1': 5,
-    '1,3': 6,
-    '2,0': 7,
-    '3,0': 8,
-    '4,0': 9
+    '0,0': 1,'0,2': 2,'0,4': 3,
+    '1,0': 4,'1,1': 5,'1,3': 6,
+    '2,0': 7,'3,0': 8,'4,0': 9
   };
 
   function initCrossword(){
     const table = document.getElementById('cwTable');
     const nextBtn = document.getElementById('p4Next');
     nextBtn.style.display = 'none';
-
     table.innerHTML = '';
 
     for (let r=0;r<5;r++){
@@ -776,7 +684,6 @@
 
         if (cwBlacks.has(key)){
           td.classList.add('black');
-          // no input in black square
         } else {
           const inp = document.createElement('input');
           inp.className = 'cw-inp';
@@ -787,30 +694,6 @@
           inp.addEventListener('input', () => {
             inp.value = (inp.value || '').slice(0,1).toUpperCase();
             check();
-          });
-
-          inp.addEventListener('keydown', (e) => {
-            const rr = parseInt(inp.dataset.r,10);
-            const cc = parseInt(inp.dataset.c,10);
-
-            const moveTo = (nr,nc) => {
-              // skip blacks when moving
-              while (nr>=0 && nr<=4 && nc>=0 && nc<=4 && cwBlacks.has(`${nr},${nc}`)) {
-                // keep moving in same direction if possible
-                if (e.key === 'ArrowLeft') nc--;
-                else if (e.key === 'ArrowRight') nc++;
-                else if (e.key === 'ArrowUp') nr--;
-                else if (e.key === 'ArrowDown') nr++;
-                else break;
-              }
-              const sel = table.querySelector(`input[data-r="${nr}"][data-c="${nc}"]`);
-              if (sel) sel.focus();
-            };
-
-            if (e.key === 'ArrowLeft')  { e.preventDefault(); moveTo(rr, cc-1); }
-            if (e.key === 'ArrowRight') { e.preventDefault(); moveTo(rr, cc+1); }
-            if (e.key === 'ArrowUp')    { e.preventDefault(); moveTo(rr-1, cc); }
-            if (e.key === 'ArrowDown')  { e.preventDefault(); moveTo(rr+1, cc); }
           });
 
           td.appendChild(inp);
@@ -826,22 +709,17 @@
       table.querySelectorAll('input.cw-inp').forEach(inp => {
         const r = parseInt(inp.dataset.r,10);
         const c = parseInt(inp.dataset.c,10);
-        const expected = cwGrid[r][c]; // never 'X' here because blacks have no inputs
+        const expected = cwGrid[r][c];
         const v = (inp.value || '').toUpperCase();
         if (v !== expected) ok = false;
       });
-
-      if (ok){
-        nextBtn.style.display = 'inline-block';
-      } else {
-        nextBtn.style.display = 'none';
-      }
+      nextBtn.style.display = ok ? 'inline-block' : 'none';
     }
 
     nextBtn.onclick = () => show('p5');
   }
 
-  /* ========= Puzzle 5: Prime Fibonacci Time (fixed list) ========= */
+  /* ===== Puzzle 5: Prime Fibonacci Time (fixed list) ===== */
   let p5Timer = null;
   const primeFibUnder60 = new Set([2,3,5,13]);
 
@@ -849,7 +727,6 @@
     const clock = document.getElementById('p5Clock');
     const checkBtn = document.getElementById('p5Check');
     const nextBtn = document.getElementById('p5Next');
-
     nextBtn.style.display = 'none';
 
     function update(){
@@ -880,7 +757,7 @@
     nextBtn.onclick = () => show('pw2');
   }
 
-  /* ========= Password 2: FUECOCO ========= */
+  /* ===== Password 2: FUECOCO ===== */
   (function initPw2(){
     const ids = ['pw2_1','pw2_2','pw2_3','pw2_4','pw2_5','pw2_6','pw2_7'];
     const inputs = ids.map(id => document.getElementById(id));
