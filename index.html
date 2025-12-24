@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Puzzle Sequel</title>
+  <title>Sam Christmas Puzzle</title>
   <style>
     * { box-sizing: border-box; }
     html, body { height: 100%; }
@@ -196,6 +196,11 @@
       vertical-align: middle;
       margin-right: 6px;
     }
+    #monty-note{
+      margin-top: 8px;
+      opacity:.85;
+      font-size: 14px;
+    }
 
     /* ===== Crossword ===== */
     .cw-wrap{
@@ -270,13 +275,16 @@
 
     /* Final */
     #final img{
-      width: min(360px, 70vw);
+      display:block;
+      max-width: min(520px, 80vw);
+      max-height: min(70vh, 620px);
+      width: auto;
       height: auto;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
+      object-fit: contain;
       border-radius: 18px;
       border: 2px solid #333;
-      margin-top: 10px;
+      margin: 12px auto 0;
+      background: #000;
     }
     #final .mc{
       margin-top: 14px;
@@ -285,6 +293,10 @@
   </style>
 </head>
 <body>
+
+  <!-- Global audio (hidden) -->
+  <audio id="jingle" preload="auto" src="jinglebells.mp3"></audio>
+  <audio id="hahaSound" preload="auto" src="haha.mp3"></audio>
 
   <!-- ===== Password 1 ===== -->
   <section id="pw1" class="section active">
@@ -306,7 +318,6 @@
       <div class="status" id="p1Status"></div>
       <button id="p1Next" disabled>Next</button>
     </div>
-    <audio id="jingle" preload="auto" src="jinglebells.mp3"></audio>
   </section>
 
   <!-- ===== Puzzle 2 ===== -->
@@ -323,6 +334,8 @@
   <!-- ===== Puzzle 3 ===== -->
   <section id="p3" class="section">
     <h1>Puzzle 3</h1>
+
+    <div id="monty-note">Three goats and you're back to puzzle 1.</div>
 
     <div class="goat-wrap">
       <div class="goat-pill">
@@ -380,7 +393,7 @@
   <section id="p5" class="section">
     <h1>Puzzle 5</h1>
     <div class="rule-title">
-      <span class="strike">Prime</span><span class="fib">Fibonacci</span>Time
+      <span class="strike">Prime</span><span class="fib">Fibonacci</span><span style="margin-right:8px;">Prime</span>Time
     </div>
     <div class="clock" id="p5Clock">00:00</div>
     <button id="p5Check">Prime Fibonacci Time?</button>
@@ -408,8 +421,6 @@
     <div class="mc">Merry Christmas</div>
   </section>
 
-  <audio id="hahaSound" preload="auto" src="haha.mp3"></audio>
-
 <script>
   function show(id){
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -420,6 +431,16 @@
     if (id === 'p3') initMonty();
     if (id === 'p4') initCrossword();
     if (id === 'p5') initPrimeFibTime();
+
+    if (id === 'final') {
+      const j = document.getElementById('jingle');
+      try {
+        j.pause();
+        j.currentTime = 0;
+        j.loop = true;
+        j.play();
+      } catch(e) {}
+    }
   }
 
   /* ===== Password 1: haha (lowercase), lock inputs, play full sound, then advance ===== */
@@ -480,7 +501,7 @@
     fill.style.transform = 'scaleX(0)';
     meterBar.style.width = '0%';
 
-    try { audio.pause(); audio.currentTime = 0; } catch(e) {}
+    try { audio.loop = false; audio.pause(); audio.currentTime = 0; } catch(e) {}
 
     if (!p1Inited){
       p1Inited = true;
@@ -570,7 +591,7 @@
   }
 
   function hardReset(){
-    try { location.reload(); } catch(e) { alert("Complete reset needed. Please refresh the page."); }
+    show('p1');
   }
 
   function initMonty(){
@@ -663,7 +684,7 @@
 
   /* ===== Puzzle 4: Crossword ===== */
   const cwGrid = [
-    ['R','X','A','X','I'],  // <-- FIXED: top row middle is A
+    ['R','X','A','X','I'],
     ['E','J','E','C','T'],
     ['C','A','M','A','N'],
     ['U','M','M','N','O'],
@@ -680,7 +701,7 @@
     const table = document.getElementById('cwTable');
     const checkBtn = document.getElementById('cwCheck');
     const hahaText = document.getElementById('cwHaha');
-    const nextBtn = document.getElementById('p4Next'); // unused
+    const nextBtn = document.getElementById('p4Next');
     nextBtn.style.display = 'none';
 
     checkBtn.style.display = 'inline-block';
@@ -755,32 +776,30 @@
         s.currentTime = 0;
         const p = s.play();
         if (p && typeof p.catch === 'function') {
-          p.catch(() => {
-            // autoplay blocked: still continue quickly
-            setTimeout(done, 650);
-          });
+          p.catch(() => setTimeout(done, 650));
         }
       } catch (e) {
         setTimeout(done, 650);
       }
 
-      // safety fallback in case onended never fires
       setTimeout(done, Math.max(900, (s.duration ? (s.duration * 1000 + 200) : 1200)));
     }
 
     checkBtn.onclick = () => {
+      if (checkBtn.disabled) return;
       checkBtn.disabled = true;
+
       const ok = isCorrect();
+
+      if (ok){
+        show('p5');              // advance straight away when correct
+        return;
+      }
 
       playHahaThen(() => {
         hahaText.classList.remove('show');
-
-        if (ok){
-          show('p5');
-        } else {
-          checkBtn.style.display = 'inline-block';
-          checkBtn.disabled = false;
-        }
+        checkBtn.style.display = 'inline-block';
+        checkBtn.disabled = false;
       });
     };
   }
