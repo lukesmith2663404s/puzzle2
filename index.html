@@ -268,6 +268,12 @@
     }
     #cwHaha.show{ opacity: 1; }
 
+    /* Optional quick visual feedback on wrong */
+    .cw-wrong{
+      outline: 3px solid #ff2d2d;
+      outline-offset: -3px;
+    }
+
     /* Final */
     #final img{
       width: min(360px, 70vw);
@@ -452,7 +458,7 @@
 
         const s = document.getElementById('hahaSound');
         s.onended = () => { s.onended = null; show('p1'); };
-        try { s.currentTime = 0; s.play(); } catch(e) {}
+        try { s.currentTime = 0; s.play(); } catch(e) { show('p1'); }
       }
     }
   })();
@@ -661,7 +667,7 @@
     }
   }
 
-  /* ===== Puzzle 4: Crossword (check button + haha + sound + advance after sound) ===== */
+  /* ===== Puzzle 4: Crossword (CHECK BUTTON FIXED) ===== */
   const cwGrid = [
     ['R','X','J','X','I'],
     ['E','J','E','C','T'],
@@ -680,10 +686,11 @@
     const table = document.getElementById('cwTable');
     const checkBtn = document.getElementById('cwCheck');
     const hahaText = document.getElementById('cwHaha');
-    const nextBtn = document.getElementById('p4Next'); // kept, not used
+    const nextBtn = document.getElementById('p4Next'); // unused
     nextBtn.style.display = 'none';
 
     checkBtn.style.display = 'inline-block';
+    checkBtn.disabled = false;
     hahaText.classList.remove('show');
 
     table.innerHTML = '';
@@ -712,6 +719,7 @@
 
           inp.addEventListener('input', () => {
             inp.value = (inp.value || '').slice(0,1).toUpperCase();
+            inp.classList.remove('cw-wrong');
           });
 
           td.appendChild(inp);
@@ -729,30 +737,63 @@
         const c = parseInt(inp.dataset.c,10);
         const expected = cwGrid[r][c];
         const v = (inp.value || '').toUpperCase();
-        if (v !== expected) ok = false;
+        if (v !== expected){
+          ok = false;
+          inp.classList.add('cw-wrong');
+        }
       });
       return ok;
     }
 
-    checkBtn.onclick = () => {
-      if (!isCorrect()) return;
-
-      // hide button, show haha, play sound, then advance
+    function playHahaThen(callback){
       checkBtn.style.display = 'none';
       hahaText.classList.add('show');
 
       const s = document.getElementById('hahaSound');
-      s.onended = () => {
+      let finished = false;
+
+      const done = () => {
+        if (finished) return;
+        finished = true;
         s.onended = null;
-        hahaText.classList.remove('show');
-        show('p5');
+        callback();
       };
-      try { s.currentTime = 0; s.play(); } catch(e) {
-        // If autoplay blocked, still advance immediately
-        s.onended = null;
-        hahaText.classList.remove('show');
-        show('p5');
+
+      s.onended = done;
+
+      try {
+        s.currentTime = 0;
+        const p = s.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {
+            // autoplay blocked: still continue quickly
+            setTimeout(done, 650);
+          });
+        }
+      } catch (e) {
+        setTimeout(done, 650);
       }
+
+      // safety fallback in case onended never fires
+      setTimeout(done, Math.max(900, (s.duration ? (s.duration * 1000 + 200) : 1200)));
+    }
+
+    checkBtn.onclick = () => {
+      checkBtn.disabled = true;
+      const ok = isCorrect();
+
+      // Per your latest request: button disappears + haha + sound ALWAYS
+      playHahaThen(() => {
+        hahaText.classList.remove('show');
+
+        if (ok){
+          show('p5');
+        } else {
+          // wrong: bring button back so they can try again
+          checkBtn.style.display = 'inline-block';
+          checkBtn.disabled = false;
+        }
+      });
     };
   }
 
