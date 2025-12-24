@@ -257,6 +257,17 @@
     .clues h3{ margin: 8px 0 6px; }
     .clues p{ margin: 4px 0; }
 
+    /* crossword haha */
+    #cwHaha{
+      color:#ff2d2d;
+      font-weight:700;
+      margin-top: 6px;
+      min-height: 22px;
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+    #cwHaha.show{ opacity: 1; }
+
     /* Final */
     #final img{
       width: min(360px, 70vw);
@@ -339,6 +350,10 @@
 
     <div class="cw-wrap">
       <table class="cw-grid" id="cwTable"></table>
+
+      <button id="cwCheck">Check</button>
+      <div id="cwHaha">haha</div>
+
       <button id="p4Next" style="display:none;">Next</button>
     </div>
 
@@ -646,7 +661,7 @@
     }
   }
 
-  /* ===== Puzzle 4: Crossword (auto-advance on correct) ===== */
+  /* ===== Puzzle 4: Crossword (check button + haha + sound + advance after sound) ===== */
   const cwGrid = [
     ['R','X','J','X','I'],
     ['E','J','E','C','T'],
@@ -663,8 +678,14 @@
 
   function initCrossword(){
     const table = document.getElementById('cwTable');
-    const nextBtn = document.getElementById('p4Next');
+    const checkBtn = document.getElementById('cwCheck');
+    const hahaText = document.getElementById('cwHaha');
+    const nextBtn = document.getElementById('p4Next'); // kept, not used
     nextBtn.style.display = 'none';
+
+    checkBtn.style.display = 'inline-block';
+    hahaText.classList.remove('show');
+
     table.innerHTML = '';
 
     for (let r=0;r<5;r++){
@@ -691,7 +712,6 @@
 
           inp.addEventListener('input', () => {
             inp.value = (inp.value || '').slice(0,1).toUpperCase();
-            check();
           });
 
           td.appendChild(inp);
@@ -702,7 +722,7 @@
       table.appendChild(tr);
     }
 
-    function check(){
+    function isCorrect(){
       let ok = true;
       table.querySelectorAll('input.cw-inp').forEach(inp => {
         const r = parseInt(inp.dataset.r,10);
@@ -711,17 +731,29 @@
         const v = (inp.value || '').toUpperCase();
         if (v !== expected) ok = false;
       });
-
-      if (ok){
-        nextBtn.style.display = 'inline-block';
-        // auto-advance immediately once correct
-        show('p5');
-      } else {
-        nextBtn.style.display = 'none';
-      }
+      return ok;
     }
 
-    nextBtn.onclick = () => show('p5');
+    checkBtn.onclick = () => {
+      if (!isCorrect()) return;
+
+      // hide button, show haha, play sound, then advance
+      checkBtn.style.display = 'none';
+      hahaText.classList.add('show');
+
+      const s = document.getElementById('hahaSound');
+      s.onended = () => {
+        s.onended = null;
+        hahaText.classList.remove('show');
+        show('p5');
+      };
+      try { s.currentTime = 0; s.play(); } catch(e) {
+        // If autoplay blocked, still advance immediately
+        s.onended = null;
+        hahaText.classList.remove('show');
+        show('p5');
+      }
+    };
   }
 
   /* ===== Puzzle 5: TEST MODE — always succeeds ===== */
